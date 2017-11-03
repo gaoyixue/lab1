@@ -1,154 +1,122 @@
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
 import javax.swing.JOptionPane;
 
-public class DG {
+public class Dg {
+  private class Vnode {
+    String data;
+    Enode first;
+    Integer num;
+    int w;
+  }
+  
+  private class Enode {
+    String data;
+    Enode next;
+    boolean visit;
+    int w;
+  }
+  
+  private static Vnode [] vlist;
+  private static String StringUtils;
 
-	private class vnode{
-		String data;
-		enode first;
-		Integer num;
-		int w;
-	}
-	private class enode{
-		String data;
-		enode next;
-		boolean visit;
-		int w;
-	}
-	private static vnode[] vlist;
-	
-	public DG(String[] str)
-	{
-		ArrayList<String> set=new ArrayList<String>();
-		for(int i=0;i<str.length;i++)
-		{
-			if(!set.contains(str[i]))
-			{
-				set.add(str[i]);
-			}
-		}
-		Object sa[]=set.toArray();
-		vlist=new vnode[set.size()];
-	    for(int i=0;i<set.size();i++)
-	    {
-	    	//System.out.println(set[i]);
-	    	vlist[i]=new vnode();
-	    	vlist[i].data=(String)sa[i];
-	    	vlist[i].first=null;
-	    	vlist[i].num=0;
-	    }
-	    for(int k=1;k<str.length;k++)
-	    {
-	    	int j=index(str[k-1]);
-	    	int f=0;
-	    	enode node1=vlist[j].first;
-	    	if(node1!=null)
-	    	{
-	    	while(node1!=null)
-	    	{
-	    		if(node1.data.equals(str[k]))
-	    		{
-	    			node1.w++;
-	    			f=1;
-	    			break;
-	    		}
-	    		node1=node1.next;
-	    	}
-	    	}
-	    	if(f==0)
-	    	{
-	    	enode node=new enode();
-	    	node.data=str[k];
-	    	node.visit=false;
-	    	node.w=1;
-	    	node.next=vlist[j].first;
-	    	vlist[j].first=node;
-	    	vlist[j].num++;
-	    	}
-	    	
-	    }
-}
-	
-	public static int index(String st)
-	{
-		//System.out.println(vlist.length);
-		for(int i=0;i<vlist.length;i++)
-		{
-			if((vlist[i].data).equals(st))
-			{
-				//System.out.println(i);
-				return i;
-			}
-			if(i==(vlist.length-1))
-			{
-				return -1;
-			}
-		}
-		
-		return -1;
-	}
-	
-	public static String[] queryBridgeWords(String word1,String word2)
-	{
-		int m=index(word1);
-		int n=index(word2);
-		System.out.println();
-		ArrayList<String> str=new ArrayList<String>();
-		if((m==-1)&&(n!=-1))
-			System.out.println("No "+word1+" in the graph!");
-		else if((m!=-1)&&(n==-1))
-			System.out.println("No "+word2+" in the graph!");
-		else if((m==-1)&&(n==-1))
-			System.out.println("No "+word1+" and "+word2+" in the graph!");
-		if(m!=-1&&n!=-1)//else
-		{
-			
-			int i=0;
-			enode e=vlist[m].first;
-			while(e!=null)
-			{
-					enode e2=vlist[index(e.data)].first;
-					while(e2!=null)
-					{
-						if(e2.data.equals(word2))
-						{
-							str.add(e.data);
-						    break;
-						}
-						
-						e2=e2.next;
-					}
-					
-				e=e.next;
-			}	
-			
-		}
-		if(str.size()==0)
-			System.out.println("No bridge word from "+word1+" to "+word2);
-		else
-		{
-			System.out.println("The bridge words from "+word1+" to "+word2+" is "+str);
-		}
-		String []newstr=new String[str.size()];
-		Object []sa=str.toArray();
-		for(int i=0;i<str.size();i++)
-		{
-			newstr[i]=(String)sa[i];
-			
-		}
-		//Object [] newstr = (String[])str.toArray() ;
-	    return newstr;
-	}
+  public Dg(String []str) {
+    ArrayList<String> set = new ArrayList<String>();
+    for (int i = 0;i < str.length;i++) {
+      if (!set.contains(str[i])) {
+        set.add(str[i]);
+      }
+    }
+    Object []sa = set.toArray();
+    vlist = new Vnode[set.size()];
+    for (int i = 0;i < set.size();i++) {
+      vlist[i] = new Vnode();
+      vlist[i].data = (String)sa[i];
+      vlist[i].first = null;
+      vlist[i].num = 0;
+    }
+    for (int k = 1;k < str.length;k++) {
+      int j = index(str[k-1]);
+      int f = 0;
+      Enode node1 = vlist[j].first;
+      if (node1 != null) {
+        while (node1 != null) {
+          if (node1.data.equals(str[k])) {
+            node1.w++;
+            f = 1;
+            break;
+          }
+          node1 = node1.next;
+        }
+      }
+      if (f == 0) {
+        Enode node = new Enode();
+        node.data = str[k];
+        node.visit = false;
+        node.w = 1;
+        node.next = vlist[j].first;
+        vlist[j].first = node;
+        vlist[j].num++;
+      }    
+    }
+  }
 
-	public ArrayList<String> randWalk() {
+  public static int index(String st) {
+    for (int i = 0;i < vlist.length;i++) {
+      if ((vlist[i].data).equals(st)) {
+        return i;
+      }
+      if (i == (vlist.length - 1)) {
+        return -1;
+      }
+    }
+    return -1;
+  }
 
-		Random r=new Random();
-		int n1=r.nextInt(vlist.length);
+  public String queryBriDgeWords(String word1,String word2) {
+    int m = index(word1);
+    int n = index(word2);
+    String str2;
+    ArrayList<String> str = new ArrayList<String>();
+    if((m == -1) && (n != -1)) 
+      str2="No '" + word1 + "' in the graph!";
+    else {
+      if ((m != -1) && (n == -1))
+        str2="No '" + word2 + "' in the graph!";
+      else {
+        if(m==-1&&n==-1)
+          str2="No '" + word1 + "' and '" + word2 + "' in the graph!";
+        else {
+          int i = 0;
+          Enode e = vlist[m].first;
+          while (e != null) {
+            Enode e2 = vlist[index(e.data)].first;
+            while (e2 != null) {
+              if (e2.data.equals(word2)) {
+                str.add(e.data);
+                break;
+              }
+              e2 = e2.next;
+            }
+            e = e.next;
+          }
+        }
+        if (str.size() == 0) 
+          str2="No briDge word from " +"'"+ word1 + "' to '" + word2+"'";
+        else {
+          String str1=String.join(",", str);
+          str2="The briDge words from '"  +word1 + "' to '"+ word2 +"' is:" + str1;
+        }
+      }
+    }
+      return str2;
+  }
+
+  public ArrayList<String> randWalk() {
+  Random r=new Random();
+  int n1=r.nextInt(vlist.length);
 		ArrayList<String> s=new ArrayList<String>();
 		s.add(vlist[n1].data);
 		while(true)
@@ -156,7 +124,7 @@ public class DG {
 			if(vlist[n1].num==0)
 				return s;
 			int n2=r.nextInt(vlist[n1].num);
-			enode node=vlist[n1].first;
+			Enode node=vlist[n1].first;
 			for(int k=0;k<n2;k++)
 			{
 				node=node.next;
@@ -169,7 +137,7 @@ public class DG {
 		}
 	}
 	
-	static String [] generateNewText(String []inputText)
+	/*static String [] generateNewText(String []inputText)
 	{
 		
 		ArrayList <String> newtext= new ArrayList<String>();
@@ -177,7 +145,7 @@ public class DG {
 		for (int i=0;i<inputText.length-1;i++)
 		{
 			newtext.add(inputText[i]);
-			String l[]=queryBridgeWords(inputText[i],inputText[i+1]);
+			String l[]=queryBriDgeWords(inputText[i],inputText[i+1]);
 			if(l.length==0)
 				continue;
 			else
@@ -202,7 +170,7 @@ public class DG {
 		path=new int [n];
 		int []visited;
 		visited=new int [n];  
-		Queue<vnode> q=new LinkedList<>();  
+		Queue<Vnode> q=new LinkedList<>();  
 	    //初始化  
 	    final int INF=Integer.MAX_VALUE;
 	    for(int i = 0; i < n; i++)  
@@ -215,13 +183,13 @@ public class DG {
 	    q.offer(vlist[v0]);  
 	    while(!q.isEmpty())  
 	    {  
-	        vnode cd = q.element();  
+	        Vnode cd = q.element();  
 	        q.poll();  
 	        int u=index(cd.data);
 	        if(visited[u]==1)  
 	            continue;  
 	        visited[u] = 1;  
-	        enode p=vlist[u].first;
+	        Enode p=vlist[u].first;
 	        while(p!=null)  
 	        {  
 	            int tempv = index(p.data);  
@@ -310,14 +278,14 @@ public class DG {
 			e.printStackTrace();
 		}
 	     return null;
-	}
+	}*/
 	public static void main(String[] args) {
-		   String s3[]=readfromfile("F:\\java\\lab1\\java.txt");
+		   /*String s3[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\java.txt");
 		   
-		    DG dg=new DG(s3);
-		    for(int i=0;i<dg.vlist.length;i++)
+		    Dg Dg=new Dg(s3);
+		    for(int i=0;i<Dg.vlist.length;i++)
 			   {
-				   System.out.print(dg.vlist[i].data+" ");
+				   System.out.print(Dg.vlist[i].data+" ");
 			   }
 	            String a=JOptionPane.showInputDialog("choose function(1,2,3,4,5,6):");
 	            while(a!="0")
@@ -340,15 +308,11 @@ public class DG {
 	        		break;
 	        	case "3":
 	        		String w1=JOptionPane.showInputDialog("input word1:");
-	        		String w2=JOptionPane.showInputDialog("input word2:");
-	        
-	        		
-	        		dg.queryBridgeWords(w1,w2);	
-	        		
-	        		       
+	        		String w2=JOptionPane.showInputDialog("input word2:");	
+	        		Dg.queryBriDgeWords(w1,w2);	       
 	        		break;
 	        	case "4":
-	        		String s5[]=readfromfile("F:\\java\\lab1\\newtext.txt");
+	        		String s5[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\newtext.txt");
 	        		System.out.println();
 	        		for(int i=0;i<s5.length;i++)
 	        		{
@@ -365,12 +329,12 @@ public class DG {
 	        	case "5":
 	        		String wo1=JOptionPane.showInputDialog("input word1:");
 	        		String wo2=JOptionPane.showInputDialog("input word2:");
-	        		//String []s7=dg.calcShortestPath(wo1,wo2);
-	        		if(dg.index(wo2)==-1)
+	        		//String []s7=Dg.calcShortestPath(wo1,wo2);
+	        		if(Dg.index(wo2)==-1)
 	        		{
-	        			for(int j=0;j<dg.vlist.length;j++)
+	        			for(int j=0;j<Dg.vlist.length;j++)
 	        			{
-	        			   String []s7=dg.calcShortestPath(wo1,dg.vlist[j].data);
+	        			   String []s7=Dg.calcShortestPath(wo1,Dg.vlist[j].data);
 	        			   for(int i=0;i<s7.length;i++)
 			        	   {
 			        		   System.out.print(s7[s7.length-1-i]+" ");
@@ -380,7 +344,7 @@ public class DG {
 	        		}
 	        		else
 	        		{
-	        			String []s8=dg.calcShortestPath(wo1,wo2);
+	        			String []s8=Dg.calcShortestPath(wo1,wo2);
      			       for(int i=0;i<s8.length;i++)
 		        	   {
 		        		   System.out.print(s8[s8.length-1-i]+" ");
@@ -388,7 +352,7 @@ public class DG {
 	        		}
 	        		break;
 	        	case "6":
-	        		ArrayList<String> s6=dg.randWalk();
+	        		ArrayList<String> s6=Dg.randWalk();
     	            System.out.println(s6);
 	    	        break;
 	        		
@@ -396,7 +360,11 @@ public class DG {
 	        		break;
 	        	}
 	            a=JOptionPane.showInputDialog("choose function(1,2,3,4,5,6):");
-	            }
+	            }*/
+	  String []str={"to", "explore", "strange", "new", "worlds", "to", "seek", "out", "new", "life", "and",
+	      "new","civilizations"};
+	  Dg dg = new Dg(str);
+	  System.out.println(dg.queryBriDgeWords("am","out"));
 	}
-
+  
 }
