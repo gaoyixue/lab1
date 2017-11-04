@@ -75,7 +75,7 @@ public class Dg {
     return -1;
   }
 
-  public String queryBriDgeWords(String word1,String word2) {
+  public static String queryBriDgeWords(String word1,String word2) {
     int m = index(word1);
     int n = index(word2);
     String str2;
@@ -86,10 +86,11 @@ public class Dg {
       if ((m != -1) && (n == -1))
         str2="No '" + word2 + "' in the graph!";
       else {
-        if(m==-1&&n==-1)
+        if(m==-1&&n==-1) {
           str2="No '" + word1 + "' and '" + word2 + "' in the graph!";
+          return str2;
+        }
         else {
-          int i = 0;
           Enode e = vlist[m].first;
           while (e != null) {
             Enode e2 = vlist[index(e.data)].first;
@@ -137,7 +138,7 @@ public class Dg {
 		}
 	}
 	
-	/*static String [] generateNewText(String []inputText)
+	static String [] generateNewText(String []inputText)
 	{
 		
 		ArrayList <String> newtext= new ArrayList<String>();
@@ -145,7 +146,9 @@ public class Dg {
 		for (int i=0;i<inputText.length-1;i++)
 		{
 			newtext.add(inputText[i]);
-			String l[]=queryBriDgeWords(inputText[i],inputText[i+1]);
+			String ll=queryBriDgeWords(inputText[i],inputText[i+1]);
+			String lll[]=ll.split(":");
+			String l[]=lll[1].split(",");
 			if(l.length==0)
 				continue;
 			else
@@ -278,9 +281,9 @@ public class Dg {
 			e.printStackTrace();
 		}
 	     return null;
-	}*/
+	}
 	public static void main(String[] args) {
-		   /*String s3[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\java.txt");
+		   String s3[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\java.txt");
 		   
 		    Dg Dg=new Dg(s3);
 		    for(int i=0;i<Dg.vlist.length;i++)
@@ -360,11 +363,7 @@ public class Dg {
 	        		break;
 	        	}
 	            a=JOptionPane.showInputDialog("choose function(1,2,3,4,5,6):");
-	            }*/
-	  String []str={"to", "explore", "strange", "new", "worlds", "to", "seek", "out", "new", "life", "and",
-	      "new","civilizations"};
-	  Dg dg = new Dg(str);
-	  System.out.println(dg.queryBriDgeWords("am","out"));
+	            }
 	}
   
 }
