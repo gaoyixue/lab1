@@ -1,28 +1,13 @@
+package com;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
 
-import javax.swing.JOptionPane;
-
-public class Dg {
-  private class Vnode {
-    String data;
-    Enode first;
-    Integer num;
-    int w;
-  }
-  
-  private class Enode {
-    String data;
-    Enode next;
-    boolean visit;
-    int w;
-  }
-  
+public class Dgraph {
   private static Vnode [] vlist;
-  private static String StringUtils;
 
-  public Dg(String []str) {
+  public void createGraph(String []str) {
     ArrayList<String> set = new ArrayList<String>();
     for (int i = 0;i < str.length;i++) {
       if (!set.contains(str[i])) {
@@ -52,11 +37,7 @@ public class Dg {
         }
       }
       if (f == 0) {
-        Enode node = new Enode();
-        node.data = str[k];
-        node.visit = false;
-        node.w = 1;
-        node.next = vlist[j].first;
+        Enode node = new Enode(str[k],vlist[j].first,false,1);
         vlist[j].first = node;
         vlist[j].num++;
       }    
@@ -75,9 +56,10 @@ public class Dg {
     return -1;
   }
 
-  public static String queryBriDgeWords(String word1,String word2) {
+  public String queryBriDgeWords(String word1,String word2) {
     int m = index(word1);
     int n = index(word2);
+    
     String str2;
     ArrayList<String> str = new ArrayList<String>();
     if((m == -1) && (n != -1)) 
@@ -86,7 +68,7 @@ public class Dg {
       if ((m != -1) && (n == -1))
         str2="No '" + word2 + "' in the graph!";
       else {
-        if(m==-1&&n==-1) {
+        if(m==-1 && n==-1) {
           str2="No '" + word1 + "' and '" + word2 + "' in the graph!";
           return str2;
         }
@@ -112,7 +94,8 @@ public class Dg {
         }
       }
     }
-      return str2;
+    
+    return str2;
   }
 
   public ArrayList<String> randWalk() {
@@ -138,7 +121,7 @@ public class Dg {
 		}
 	}
 	
-	static String [] generateNewText(String []inputText)
+	String [] generateNewText(String []inputText)
 	{
 		
 		ArrayList <String> newtext= new ArrayList<String>();
@@ -147,6 +130,7 @@ public class Dg {
 		{
 			newtext.add(inputText[i]);
 			String ll=queryBriDgeWords(inputText[i],inputText[i+1]);
+			if(ll.contains(":")) {
 			String lll[]=ll.split(":");
 			String l[]=lll[1].split(",");
 			if(l.length==0)
@@ -154,6 +138,7 @@ public class Dg {
 			else
 			{
 				newtext.add(l[r.nextInt(l.length)]);
+			}
 			}
 		}
 		newtext.add(inputText[inputText.length-1]);
@@ -206,57 +191,65 @@ public class Dg {
 	            p = p.next;  
 	        }  
 	    }  
-	    System.out.println("最短路径长为："+vlist[s0].w);
+	    //System.out.println("最短路径长为："+vlist[s0].w);
 	    return path;
 	}
-	String[] calcShortestPath(String word1, String word2)
+	
+	int i;
+	String calcShortestPath(String word1, String word2)
 	{
-		System.out.println();
-		ArrayList <String> p= new ArrayList<String>();
-		int []Pa;
-		int w1=index(word1);
-		int w2=index(word2);
-		if(w1!=-1&&w2!=-1)
-		{
-			Pa=Dijkstra(w1, vlist.length,w2);
-			while(w2!=-1)
-			{
-				p.add(vlist[w2].data);
-				w2=Pa[w2];
-			}
-		}
-		else if(w1!=-1&&word2.length()==0)
-		{
-			for(int i=0;i<vlist.length;i++)
-			{
-				if(i==w1)
-					continue;
-				System.out.print(vlist[w1].data+"到"+vlist[i].data);
-				w2=i;
-				Pa=Dijkstra(w1, vlist.length,w2);
-				while(w2!=-1)
-				{
-					p.add(vlist[w2].data);
-					w2=Pa[w2];
-				}
-			}
-			
-		}
-		else
+	  ArrayList <String> p= new ArrayList<String>();
+    int []Pa;
+    int w1=index(word1);
+    int w2=index(word2);
+    int i=0;
+    if(w1!=-1&&word2.isEmpty())
+    {
+      for(int j=0;j<vlist.length;j++)
+      {
+        Pa=Dijkstra(w1, vlist.length,j);
+        w2=j;
+        while(w2!=-1)
         {
-            System.out.println("单词不存在");
+          p.add(vlist[w2].data);
+          w2=Pa[w2];
         }
-		String []path=new String[p.size()];
-		Object []sa=p.toArray();
-		for(int i=0;i<p.size();i++)
-		{
-			path[i]=(String)sa[i];
-			
-		}
-		return path;
+      }
+    }
+    else if(w1==-1||(w1!=-1&&w2==-1))
+    {
+      System.out.println("单词不存在");
+    }
+    else
+    {
+      Pa=Dijkstra(w1, vlist.length,w2);
+      while(w2!=-1)
+      {
+        p.add(vlist[w2].data);
+        w2=Pa[w2];
+      }
+    }
+ 
+    String []path=new String[p.size()];
+    Object []sa=p.toArray();
+    for(i=0;i<p.size();i++)
+    {
+      path[i]=(String)sa[i];
+      
+    }
+    StringBuffer str = new StringBuffer();
+    for(int m = 0; m < path.length; m++){
+     str. append(path[path.length-m-1]);
+     if(m<path.length-1)
+       str. append(',');
+    }
+    String s = str.toString();
+
+    return s;
+    
 	}
 
-	static String[] readfromfile(String filepath)
+	String[] readfromfile(String filepath)
 	{
 	     try
 	     {
@@ -280,90 +273,16 @@ public class Dg {
 		{
 			e.printStackTrace();
 		}
-	     return null;
+	    return null;
 	}
-	public static void main(String[] args) {
-		   String s3[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\java.txt");
-		   
-		    Dg Dg=new Dg(s3);
-		    for(int i=0;i<Dg.vlist.length;i++)
-			   {
-				   System.out.print(Dg.vlist[i].data+" ");
-			   }
-	            String a=JOptionPane.showInputDialog("choose function(1,2,3,4,5,6):");
-	            while(a!="0")
-	            {
-	        	switch(a)
-	        	{
-	        	case "1":
-	        	{
-	        		GraphViz gViz=new GraphViz("C:\\Users\\dell\\Desktop", "D:\\Program Files\\graphviz2.38\\bin\\dot.exe");
-	    	        gViz.start_graph();
-	    	        for(int i=0;i<s3.length-1;i++)
-	    	        {
-	    	        	gViz.addln(s3[i]+"->"+s3[i+1]);
-	    	        }
-	    	        gViz.end_graph();
-	    	        gViz.run();
-	    	        break;
-	        	}
-	        	case "2":
-	        		break;
-	        	case "3":
-	        		String w1=JOptionPane.showInputDialog("input word1:");
-	        		String w2=JOptionPane.showInputDialog("input word2:");	
-	        		Dg.queryBriDgeWords(w1,w2);	       
-	        		break;
-	        	case "4":
-	        		String s5[]=readfromfile("F:\\软件工程\\实验一\\1150310110-lab1-code\\newtext.txt");
-	        		System.out.println();
-	        		for(int i=0;i<s5.length;i++)
-	        		{
-	        			System.out.print(s5[i]+" ");
-	        		}
-	        		String s9[]=generateNewText(s5);
-	        		System.out.println();
-	        		for(int i=0;i<s9.length;i++)
-	        		{
-	        			System.out.print(s9[i]+" ");
-	        		}
-	        		System.out.println();
-	        		break;
-	        	case "5":
-	        		String wo1=JOptionPane.showInputDialog("input word1:");
-	        		String wo2=JOptionPane.showInputDialog("input word2:");
-	        		//String []s7=Dg.calcShortestPath(wo1,wo2);
-	        		if(Dg.index(wo2)==-1)
-	        		{
-	        			for(int j=0;j<Dg.vlist.length;j++)
-	        			{
-	        			   String []s7=Dg.calcShortestPath(wo1,Dg.vlist[j].data);
-	        			   for(int i=0;i<s7.length;i++)
-			        	   {
-			        		   System.out.print(s7[s7.length-1-i]+" ");
-		        		   }
-	        			   System.out.println();
-	        			}
-	        		}
-	        		else
-	        		{
-	        			String []s8=Dg.calcShortestPath(wo1,wo2);
-     			       for(int i=0;i<s8.length;i++)
-		        	   {
-		        		   System.out.print(s8[s8.length-1-i]+" ");
-	        		   }
-	        		}
-	        		break;
-	        	case "6":
-	        		ArrayList<String> s6=Dg.randWalk();
-    	            System.out.println(s6);
-	    	        break;
-	        		
-	        	default:
-	        		break;
-	        	}
-	            a=JOptionPane.showInputDialog("choose function(1,2,3,4,5,6):");
-	            }
-	}
-  
+    public void showDgraph(String s3[]) {
+    	GraphViz gViz=new GraphViz("C:\\Users\\dell\\Desktop", "D:\\Program Files\\graphviz2.38\\bin\\dot.exe");
+        gViz.start_graph();
+        for(int i=0;i<s3.length-1;i++)
+        {
+        	gViz.addln(s3[i]+"->"+s3[i+1]);
+        }
+        gViz.end_graph();
+        gViz.run();
+    }
 }
